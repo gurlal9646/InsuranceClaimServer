@@ -40,7 +40,7 @@ router.post("/login", async (request, response) => {
           expiresIn: "1d",
         }
       );
-      response.status(200).send(token);
+      response.status(200).send({token,RoleID: user.RoleID});
     } else {
       response.status(401).send("Username or password is incorrect.");
     }
