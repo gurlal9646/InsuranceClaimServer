@@ -19,18 +19,15 @@ const apiRouter = require("./routes/api");
 
 
 // Mount routers
+app.get("/", (request, response) => {
+  response.status(200).send("API is running");
+})
 
 app.use("/api", apiRouter);
 
 
 app.use((req, res, next) => {
-  // Option 1: Send a simple 404 message
-
   res.render("404");
-
-  // Option 2: Render a custom 404 page (if using a view engine)
-
-  // res.status(404).render('404');
 });
 
 const PORT = process.env.PORT || 3000;
