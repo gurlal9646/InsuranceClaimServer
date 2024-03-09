@@ -40,7 +40,9 @@ router.post("/login", async (request, response) => {
           expiresIn: "1d",
         }
       );
-      response.status(200).send({ token, RoleID: user.RoleID });
+      response
+        .status(200)
+        .send({ token, RoleID: user.RoleID, UserID: user.UserID });
     } else {
       response.status(401).send("Username or password is incorrect.");
     }
@@ -62,7 +64,9 @@ router.post("/signup", async (request, response) => {
 
     request.body.UserID = uuidv4();
     request.body.Password = await encryptPassword(request.body.Password);
-    request.body.RoleID = Roles.USER;
+    if (!request.body.hasOwnProperty("RoleID")) {
+      request.body.RoleID = Roles.USER;
+    }
     let dbResponse = await User.create(request.body);
     if (dbResponse._id) {
       const token = jwt.sign(
@@ -83,13 +87,21 @@ router.post("/signup", async (request, response) => {
   }
 });
 
-router.get("/list", async (request, response) => {
+router.get("/list/:UserId?", async (request, response) => {
   try {
+    const UserId = request.params.UserId;
     if (request.user.UserID) {
-      const users = await User.find({
-        RoleID: Roles.USER,
-      });
-      response.status(200).json(users);
+      if (UserId) {
+        const users = await User.findOne({
+          $and: [{ RoleID: request.user.RoleID }, { UserID: UserId }],
+        });
+        response.status(200).json(users);
+      } else {
+        const users = await User.find({
+          RoleID: Roles.USER,
+        });
+        response.status(200).json(users);
+      }
     } else {
       response.status(404).send("No users available");
     }
@@ -109,6 +121,47 @@ router.get("/adminlist", async (request, response) => {
       response.status(404).send("No admins available");
     }
   } catch (error) {
+    response.status(500).send("Internal server error");
+  }
+});
+
+router.put("/update/:UserId", async (request, response) => {
+  try {
+    const UserId = request.params.UserId;
+    const updatedUser = request.body;
+    if (request.user.RoleID === 1) {
+      // For admins, allow update any product
+      const user = await User.findOneAndUpdate(
+        { UserID: UserId },
+        { $set: updatedUser },
+        { new: true }
+      );
+
+      if (user) {
+        response.status(200).json("Details updated successfully!");
+      } else {
+        response.status(404).send("User not found");
+      }
+    } else if (request.user.RoleID === 2) {
+      // Assuming the UserProducts model has a UserId field
+
+      const user = await User.findOneAndUpdate(
+        {
+          $and: [{ RoleID: request.user.RoleID }, { UserID: UserId }],
+        },
+        { $set: updatedUser },
+        { new: true }
+      );
+      if (user) {
+        response.status(200).json("Details updated successfully!");
+      } else {
+        response.status(404).send("User not found");
+      }
+    } else {
+      response.status(403).send("Forbidden: Insufficient permissions");
+    }
+  } catch (error) {
+    console.error("Update User error:", error);
     response.status(500).send("Internal server error");
   }
 });
