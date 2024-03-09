@@ -40,7 +40,7 @@ router.post("/login", async (request, response) => {
           expiresIn: "1d",
         }
       );
-      response.status(200).send({token,RoleID: user.RoleID});
+      response.status(200).send({ token, RoleID: user.RoleID });
     } else {
       response.status(401).send("Username or password is incorrect.");
     }
@@ -79,6 +79,36 @@ router.post("/signup", async (request, response) => {
     }
   } catch (error) {
     console.error("Signup error:", error);
+    response.status(500).send("Internal server error");
+  }
+});
+
+router.get("/list", async (request, response) => {
+  try {
+    if (request.user.UserID) {
+      const users = await User.find({
+        RoleID: Roles.USER,
+      });
+      response.status(200).json(users);
+    } else {
+      response.status(404).send("No users available");
+    }
+  } catch (error) {
+    response.status(500).send("Internal server error");
+  }
+});
+
+router.get("/adminlist", async (request, response) => {
+  try {
+    if (request.user.UserID) {
+      const users = await User.find({
+        RoleID: Roles.ADMIN,
+      });
+      response.status(200).json(users);
+    } else {
+      response.status(404).send("No admins available");
+    }
+  } catch (error) {
     response.status(500).send("Internal server error");
   }
 });
