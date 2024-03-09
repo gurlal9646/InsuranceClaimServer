@@ -1,0 +1,97 @@
+
+
+* {
+
+    box-sizing: border-box;
+  
+    margin: 0;
+  
+    padding: 0;
+  
+   }
+  
+    
+  
+    body, html {
+  
+    height: 100%;
+  
+    font-family: Arial, sans-serif;
+  
+   }
+  
+    
+  
+    .container {
+  
+    position: relative;
+  
+    text-align: center;
+  
+    color: white;
+  
+    top: 50%;
+  
+    transform: translateY(-50%);
+  
+    padding: 15px;
+  
+   }
+  
+    
+  
+    img {
+  
+    width: 100%;
+  
+    max-width: 600px; /* Adjust the size as needed */
+  
+    height: auto;
+  
+    margin-bottom: 20px;
+  
+   }
+  
+    
+  
+    h1 {
+  
+    font-size: 2em;
+  
+    margin-bottom: 20px;
+  
+   }
+  
+    
+  
+    p {
+  
+    margin-bottom: 30px;
+  
+   }
+  
+    
+  
+    a {
+  
+    text-decoration: none;
+  
+    color: #0a7cff;
+  
+    font-size: 1em;
+  
+   }
+  
+    
+  
+    /* You can add media queries to make it responsive */
+  
+    @media (max-width: 768px) {
+  
+    h1 {
+  
+    font-size: 1.5em;
+  
+   }
+  
+   }
