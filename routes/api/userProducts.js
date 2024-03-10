@@ -34,7 +34,7 @@ router.get("/getProductById/:UserProductId", async (request, response) => {
           response.status(200).json(product);
         } else if (request.user.RoleID === 1) {
           const product = await UserProducts.findOne({
-            userProductId:userProductId         
+            UserProductId:userProductId         
           });
           response.status(200).json(product);
         } else {
