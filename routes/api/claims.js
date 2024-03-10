@@ -124,6 +124,30 @@ router.delete("/delete/:ClaimId", async (request, response) => {
   }
 });
 
+router.put("/updateClaimStatus/:ClaimId:/Status", async (request, response) => {
+  try {
+    const claimData = await Claim.findOne({ ClaimId: req.params.claimId });
+    claimData.Status = Status;
+    const updatedClaim = claimData;
+
+    // For admins, allow updating any claim
+    const claim = await Claim.findOneAndUpdate(
+      { ClaimId: claimId },
+      { $set: updatedClaim },
+      { new: true }
+    );
+
+    if (claim) {
+      response.status(200).json("Claim Status Successfully Updated!");
+    } else {
+      response.status(404).send("Claim not found");
+    }
+  } catch (error) {
+    console.error("Update Claim error:", error);
+    response.status(500).send("Internal server error");
+  }
+});
+
 connect()
   .then((connectedClient) => {
     client = connectedClient;
