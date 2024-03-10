@@ -124,12 +124,10 @@ router.delete("/delete/:ClaimId", async (request, response) => {
   }
 });
 
-router.put("/updateClaimStatus/:ClaimId/:Status", async (request, response) => {
+router.put("/updateClaimStatus/:ClaimId", async (request, response) => {
   try {
     const claimId = request.params.ClaimId;
-    const claimData = await Claim.findOne({ ClaimId: claimId });
-    claimData.Status = request.params.Status;
-    const updatedClaim = claimData;
+    const updatedClaim = request.body;
 
     // For admins, allow updating any claim
     const claim = await Claim.findOneAndUpdate(
