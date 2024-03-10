@@ -79,7 +79,13 @@ router.post("/signup", async (request, response) => {
           expiresIn: "1d",
         }
       );
-      response.status(200).send(token);
+      response
+        .status(200)
+        .send({
+          token,
+          RoleID: request.body.RoleID,
+          UserID: request.body.UserID,
+        });
     }
   } catch (error) {
     console.error("Signup error:", error);
@@ -110,13 +116,21 @@ router.get("/list/:UserId?", async (request, response) => {
   }
 });
 
-router.get("/adminlist", async (request, response) => {
+router.get("/adminlist/:UserId?", async (request, response) => {
   try {
+    const UserId = request.params.UserId;
     if (request.user.UserID) {
-      const users = await User.find({
-        RoleID: Roles.ADMIN,
-      });
-      response.status(200).json(users);
+      if (UserId) {
+        const users = await User.findOne({
+          $and: [{ RoleID: request.user.RoleID }, { UserID: UserId }],
+        });
+        response.status(200).json(users);
+      } else {
+        const users = await User.find({
+          RoleID: Roles.ADMIN,
+        });
+        response.status(200).json(users);
+      }
     } else {
       response.status(404).send("No admins available");
     }
@@ -162,6 +176,25 @@ router.put("/update/:UserId", async (request, response) => {
     }
   } catch (error) {
     console.error("Update User error:", error);
+    response.status(500).send("Internal server error");
+  }
+});
+
+// Delete route
+router.delete("/delete/:UserId", async (request, response) => {
+  try {
+    const UserId = request.params.UserId;
+    const deletedUser = await User.findOneAndDelete({
+      UserID: UserId,
+    });
+
+    if (deletedUser) {
+      response.status(200).send("User deleted successfully");
+    } else {
+      response.status(404).send("User not found");
+    }
+  } catch (error) {
+    console.error("Delete User error:", error);
     response.status(500).send("Internal server error");
   }
 });
