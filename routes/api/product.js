@@ -75,7 +75,7 @@ router.put("/update/:ProductID", async (request, response) => {
     );
 
     if (product) {
-      response.status(200).json(product);
+      response.status(200).json("Product updated successfully!");
     } else {
       response.status(404).send("Product not found");
     }
