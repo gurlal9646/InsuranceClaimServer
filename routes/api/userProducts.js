@@ -21,7 +21,7 @@ router.post("/register", async (request, response) => {
   }
 });
 
-router.get("/getProductById/:UserProductId", async (request, response) => {
+router.get("/getUserProductById/:UserProductId", async (request, response) => {
     try {
         const userProductId = request.params.UserProductId;
       if (request.user.UserID) {
