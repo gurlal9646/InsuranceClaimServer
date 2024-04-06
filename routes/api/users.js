@@ -67,6 +67,9 @@ router.post("/signup", async (request, response) => {
     if (!request.body.hasOwnProperty("RoleID")) {
       request.body.RoleID = Roles.USER;
     }
+    else{
+      request.body.RoleID = Roles.ADMIN;
+    }
     let dbResponse = await User.create(request.body);
     if (dbResponse._id) {
       const token = jwt.sign(
